@@ -1,0 +1,3 @@
+[submodule "lib/sbmp"]
+	path = lib/sbmp
+	url = git@github.com:MightyPork/sbmp.git

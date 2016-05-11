@@ -1,0 +1,17 @@
+*~
+*.o
+*.d
+*.bin
+*.elf
+*.axf
+*.hex
+*.srec
+*.list
+*.map
+*.a
+*.stylecheck
+nbproject
+
+*.dis
+
+/lib/stm32f30x_dsp_stdperiph_lib_um.chm
