@@ -1,25 +1,69 @@
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f10x.h"
-#include <stdio.h>
+#include "main.h"
+#include "hw_init.h"
+
+#include "com/debug.h"
+#include "com/com_fileio.h"
+#include "com/com_iface.h"
+#include "bus/event_queue.h"
+#include "bus/event_handler.h"
+#include "utils/timebase.h"
+
+#include "colorled.h"
+#include "display.h"
+#include <math.h>
+#include <sbmp.h>
+
+void poll_subsystems(void)
+{
+	// poll serial buffers (runs callback)
+	com_poll(debug_iface);
+	com_poll(data_iface);
+
+	// run queued tasks
+	tq_poll();
+
+	// handle queued events
+	Event evt;
+
+	until_timeout(2) { // take 2 ms max
+		if (eq_take(&evt)) {
+			run_event_handler(&evt);
+		} else {
+			break;
+		}
+	}
+}
+
+
+
+void blinky(void* arg)
+{
+	(void)arg;
+	GPIOC->ODR ^= 1<<13;
+}
+
+
 
 
 int main(void)
 {
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+	hw_init();
+	display_init();
 
-	GPIO_InitTypeDef gpio_cnf;
-	gpio_cnf.GPIO_Pin = GPIO_Pin_13;
-	gpio_cnf.GPIO_Mode = GPIO_Mode_Out_PP;
-	gpio_cnf.GPIO_Speed = GPIO_Speed_2MHz;
+	banner("*** STM32F103K8T6 RGB LED demo ***");
+	banner_info("(c) Ondrej Hruska, 2016");
+	banner_info("Katedra mereni K338, CVUT FEL");
 
-	GPIO_Init(GPIOC, &gpio_cnf);
 
+	add_periodic_task(blinky, NULL, 500, false);
 
 	while (1) {
-		GPIOC->ODR ^= GPIO_Pin_13;
-
-		// delay
-		for (int i = 0; i < 1000000; i++);
+		poll_subsystems();
 	}
 }
 
+
+void dlnk_rx(SBMP_Datagram *dg)
+{
+	dbg("Rx dg type %d", dg->type);
+}

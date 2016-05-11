@@ -4,7 +4,7 @@ ARCH_FLAGS     = -msoft-float -mfloat-abi=soft
 ARCH_FLAGS    += -mthumb -mcpu=cortex-m3
 
 # Clock speed constants
-DEFS          += -DF_CPU=8000000UL
+DEFS          += -DF_CPU=72000000UL
 
 DEFS          += -DSTM32F10X_MD
 DEFS          += -DARM_MATH_CM3
@@ -113,7 +113,7 @@ LIB_CFLAGS   = -Wno-shadow -Wno-float-equal -Wno-inline -Wno-unused-parameter -W
 ###############################################################################
 # Linker flags
 
-LDFLAGS     += --static -lm -lc -nostartfiles
+LDFLAGS     += --static -lm -lc -nostartfiles -specs=nano.specs
 LDFLAGS     += -Llib
 LDFLAGS     += -T$(LDSCRIPT)
 LDFLAGS     += -Wl,-Map=$(*).map
@@ -181,6 +181,7 @@ size: $(BINARY).elf
 
 %.elf %.map: libcheck $(OBJS) $(HEADERS)
 	$(Q)$(LD) $(LDFLAGS) $(ARCH_FLAGS) $(OBJS) $(LDLIBS) -o $(*).elf
+	$(Q)./parsemap.php
 	$(Q)$(SIZE) $(*).elf
 
 %.o: %.c

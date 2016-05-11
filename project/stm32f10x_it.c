@@ -23,6 +23,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
+#include "utils/timebase.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -138,6 +139,7 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
+	timebase_ms_cb();
 }
 
 /******************************************************************************/
