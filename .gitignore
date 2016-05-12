@@ -15,3 +15,5 @@ nbproject
 *.dis
 
 /lib/stm32f30x_dsp_stdperiph_lib_um.chm
+
+*.pro.user
